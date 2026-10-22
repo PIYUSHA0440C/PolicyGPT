@@ -34,15 +34,19 @@ const LandingPage = () => {
   const [contactSubmitted, setContactSubmitted] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    getSchemes()
-      .then((res) => {
+    (async () => {
+      setLoading(true);
+      try {
+        const res = await getSchemes();
         if (res.success && Array.isArray(res.schemes)) {
           setSchemes(res.schemes);
         }
-      })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   const handleTagClick = (tag) => {
