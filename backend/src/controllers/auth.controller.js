@@ -81,11 +81,13 @@ const registerController = async (req, res, next) => {
             { expiresIn: '7d' }
         );
 
-        // Save token in cookie under "jwt_token"
+        const isProduction = process.env.NODE_ENV === 'production' || !!process.env.RENDER;
+
+        // Save token in cookie under "jwt_token" (cross-site support for Vercel -> Render)
         res.cookie('jwt_token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
             path: '/'
         });
 
@@ -96,6 +98,7 @@ const registerController = async (req, res, next) => {
         return res.status(201).json({
             success: true,
             message: 'User registered successfully',
+            token,
             user: userResponse
         });
     } catch (error) {
@@ -138,11 +141,13 @@ const loginController = async (req, res, next) => {
             { expiresIn: '7d' }
         );
 
-        // Save token in cookie under "jwt_token"
+        const isProduction = process.env.NODE_ENV === 'production' || !!process.env.RENDER;
+
+        // Save token in cookie under "jwt_token" (cross-site support for Vercel -> Render)
         res.cookie('jwt_token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
             path: '/'
         });
 
@@ -153,6 +158,7 @@ const loginController = async (req, res, next) => {
         return res.status(200).json({
             success: true,
             message: 'Logged in successfully',
+            token,
             user: userResponse
         });
     } catch (error) {
@@ -167,10 +173,11 @@ const loginController = async (req, res, next) => {
  */
 const logoutController = async (req, res, next) => {
     try {
+        const isProduction = process.env.NODE_ENV === 'production' || !!process.env.RENDER;
         res.clearCookie('jwt_token', {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
             path: '/'
         });
         return res.status(200).json({

@@ -16,6 +16,9 @@ const useAuth = () => {
         try {
             const response = await login(email, password);
             if (response.success) {
+                if (response.token) {
+                    localStorage.setItem('jwt_token', response.token);
+                }
                 setUser(response.user);
             }
             return response;
@@ -29,6 +32,9 @@ const useAuth = () => {
         try {
             const response = await register(userData);
             if (response.success) {
+                if (response.token) {
+                    localStorage.setItem('jwt_token', response.token);
+                }
                 setUser(response.user);
             }
             return response;
@@ -41,10 +47,15 @@ const useAuth = () => {
         setLoading(true);
         try {
             const response = await logout();
+            localStorage.removeItem('jwt_token');
             if (response.success) {
                 setUser(null);
             }
             return response;
+        } catch (err) {
+            localStorage.removeItem('jwt_token');
+            setUser(null);
+            throw err;
         } finally {
             setLoading(false);
         }
