@@ -2,22 +2,49 @@
 
 > A full-stack web application that enables citizens, government officials, researchers, and organisations to access, search, analyse, and understand government policies, schemes, regulations, circulars, and public welfare programs — powered by AI.
 
+<p align="center">
+  <a href="https://policygpt-fbgu.onrender.com" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/Render-Live%20Monolith-46E3B7?style=for-the-badge&logo=render&logoColor=white" alt="Render Live Monolith Demo" />
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://policy-gpt-eight.vercel.app" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/Vercel-Live%20Frontend-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel Live Frontend Demo" />
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://policygpt-fbgu.onrender.com/health" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/API-Health%20Status-2ea44f?style=for-the-badge&logo=statuspage&logoColor=white" alt="API Health Status" />
+  </a>
+</p>
+
+---
+
+## 🌐 Live Deployments
+
+Experience the live application across both platforms:
+
+| Platform | Deployment Type | Modern Launch Action | Status |
+| :--- | :--- | :--- | :---: |
+| **Render** | **Full-Stack Monolith** (Node.js + Express API + React SPA) | <a href="https://policygpt-fbgu.onrender.com" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/Launch%20Monolith-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white" alt="Launch on Render" /></a> | ![Online](https://img.shields.io/badge/Status-Online-success?style=flat-square) |
+| **Vercel** | **Frontend Client** (Vite + React 19 SPA) | <a href="https://policy-gpt-eight.vercel.app" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/Launch%20Client-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Launch on Vercel" /></a> | ![Online](https://img.shields.io/badge/Status-Online-success?style=flat-square) |
+| **Render API** | **Backend REST API Engine** (`/api`, `/health`) | <a href="https://policygpt-fbgu.onrender.com/health" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/API%20Health-200%20OK-2ea44f?style=for-the-badge&logo=fastapi&logoColor=white" alt="Check API Health" /></a> | ![Healthy](https://img.shields.io/badge/Health-200%20OK-2ea44f?style=flat-square) |
+
 ---
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Tech Stack](#tech-stack)
-3. [Project Structure](#project-structure)
-4. [Features](#features)
-5. [Getting Started (Local Development)](#getting-started-local-development)
-6. [Environment Variables](#environment-variables)
-7. [Deployment](#deployment)
+1. [Live Deployments](#-live-deployments)
+2. [Overview](#overview)
+3. [Tech Stack](#tech-stack)
+4. [Project Structure](#project-structure)
+5. [Features](#features)
+6. [Getting Started (Local Development)](#getting-started-local-development)
+7. [Environment Variables](#environment-variables)
+8. [Deployment](#deployment)
    - [Render (Monolith — Frontend + Backend)](#render-monolith--frontend--backend)
    - [Vercel (Frontend Only)](#vercel-frontend-only)
-8. [API Reference](#api-reference)
-9. [Contributing](#contributing)
-10. [License](#license)
+9. [API Reference](#api-reference)
+10. [Contributing](#contributing)
+11. [License](#license)
 
 ---
 
@@ -243,10 +270,12 @@ Deploy the **entire app as a single Render web service**. The Express backend se
    JWT_SECRET=<your secret>
    SUPER_ADMIN_KEY=<your key>
    GEMINI_API_KEY=<your key>
-   FRONTEND_URL=https://your-app.onrender.com
+   FRONTEND_URL=https://policygpt-fbgu.onrender.com,https://policy-gpt-eight.vercel.app
    ```
 
-5. Click **Deploy**. Your app will be live at `https://your-app.onrender.com`.
+5. Click **Deploy**. Your app will be live at:
+   
+   <a href="https://policygpt-fbgu.onrender.com" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/Open%20Live%20App-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white" alt="Open on Render" /></a>
 
 > **How it works:** `npm run build` installs deps for both frontend and backend, then runs `vite build`. `npm start` launches the Express server with `NODE_ENV=production`, which statically serves `frontend/dist/` and falls back to `index.html` for all non-API routes.
 
@@ -259,7 +288,7 @@ Deploy **only the React frontend** on Vercel, pointing to your Render backend.
 #### Steps
 
 1. Go to [vercel.com](https://vercel.com) → **New Project** → import your GitHub repo.
-2. Vercel will detect `vercel.json` at the root. Set the following overrides:
+2. Vercel will detect `frontend/vercel.json` (or root `vercel.json`). Set the following overrides:
 
    | Setting               | Value                    |
    |-----------------------|--------------------------|
@@ -271,15 +300,17 @@ Deploy **only the React frontend** on Vercel, pointing to your Render backend.
 3. In **Environment Variables** on Vercel, set:
 
    ```
-   VITE_API_URL=https://your-render-app.onrender.com/api
+   VITE_API_URL=https://policygpt-fbgu.onrender.com/api
    ```
 
-4. Click **Deploy**. Your frontend will be live at `https://your-app.vercel.app`.
+4. Click **Deploy**. Your frontend will be live at:
 
-5. **Update CORS on Render:** Go back to your Render service and set:
+   <a href="https://policy-gpt-eight.vercel.app" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/Open%20Live%20Client-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Open on Vercel" /></a>
+
+5. **CORS on Render:** In your Render dashboard environment variables:
 
    ```
-   FRONTEND_URL=https://your-app.vercel.app
+   FRONTEND_URL=https://policygpt-fbgu.onrender.com,https://policy-gpt-eight.vercel.app
    ```
 
 > **SPA routing:** The `vercel.json` rewrites all routes to `index.html` so React Router handles `/dashboard`, `/policy/:id`, etc. correctly without 404s.
