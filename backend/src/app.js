@@ -1,0 +1,91 @@
+﻿const express = require('express');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
+const morgan = require('morgan');
+const path = require('path');
+const fs = require('fs');
+const errorHandler = require('./middlewares/error.middleware');
+
+const app = express();
+
+/* middleware */
+app.use(morgan('dev'));
+app.use(cors({
+  origin: process.env.FRONTEND_URL || ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  credentials: true
+}));
+app.use(express.json());
+app.use(cookieParser());
+app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+
+/* require routes */
+const authRouter = require('./routes/auth.routes');
+const profileRouter = require('./routes/profile.routes');
+const policyRouter = require('./routes/policy.routes');
+const schemeRouter = require('./routes/scheme.routes');
+const approvalRouter = require('./routes/approval.routes');
+const comparisonRouter = require('./routes/comparison.routes');
+const searchRouter = require('./routes/search.routes');
+const recommendationRouter = require('./routes/recommendation.routes');
+const eligibilityRouter = require('./routes/eligibility.routes');
+const applicationRouter = require('./routes/application.routes');
+const notificationRouter = require('./routes/notification.routes');
+const feedbackRouter = require('./routes/feedback.routes');
+const reportRouter = require('./routes/report.routes');
+const adminRouter = require('./routes/admin.routes');
+const assistantRouter = require('./routes/assistant.routes');
+const savedPolicyRouter = require('./routes/savedPolicy.routes');
+const savedSchemeRouter = require('./routes/savedScheme.routes');
+const analyticsRouter = require('./routes/analytics.routes');
+const uploadRouter = require('./routes/upload.routes');
+const circularRouter = require('./routes/circular.routes');
+
+/* using routes */
+app.use('/api/auth', authRouter);
+app.use('/api/profile', profileRouter);
+app.use('/api/policies', policyRouter);
+app.use('/api/policies', approvalRouter);
+app.use('/api/schemes', schemeRouter);
+app.use('/api/schemes', eligibilityRouter);
+app.use('/api/recommendations', recommendationRouter);
+app.use('/api/search', searchRouter);
+app.use('/api/compare', comparisonRouter);
+app.use('/api/applications', applicationRouter);
+app.use('/api/notifications', notificationRouter);
+app.use('/api/feedback', feedbackRouter);
+app.use('/api/analytics', analyticsRouter);
+app.use('/api/reports', reportRouter);
+app.use('/api/assistant', assistantRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/saved-policies', savedPolicyRouter);
+app.use('/api/saved-schemes', savedSchemeRouter);
+app.use('/api/upload', uploadRouter);
+app.use('/api/circulars', circularRouter);
+
+/* health check route */
+app.get('/health', (req, res) => {
+  res.status(200).json({ success: true, message: 'PolicyGPT backend is running' });
+});
+
+/* Serve React SPA - works whenever frontend/dist exists (local build OR Render production) */
+const frontendDist = path.join(__dirname, '../../frontend/dist');
+if (fs.existsSync(path.join(frontendDist, 'index.html'))) {
+  app.use(express.static(frontendDist));
+  app.get(/^(?!\/api).*/, (req, res) => {
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.send('PolicyGPT API is running. Build the frontend to serve the full app.');
+  });
+}
+
+/* 404 catch-all for unmatched /api routes */
+app.use((req, res, next) => {
+  res.status(404).json({ success: false, message: 'API Route Not Found' });
+});
+
+/* global error handling middleware */
+app.use(errorHandler);
+
+module.exports = app;
