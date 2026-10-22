@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -10,9 +10,45 @@ const app = express();
 
 /* middleware */
 app.use(morgan('dev'));
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'https://policy-gpt-eight.vercel.app',
+  'https://policy-ono5zdyby-piyusha0440c.vercel.app'
+];
+
+if (process.env.FRONTEND_URL) {
+  process.env.FRONTEND_URL.split(',').forEach(url => {
+    const cleaned = url.trim().replace(/\/+$/, '');
+    if (cleaned && !allowedOrigins.includes(cleaned)) {
+      allowedOrigins.push(cleaned);
+    }
+  });
+}
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || ['http://localhost:5173', 'http://127.0.0.1:5173'],
-  credentials: true
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g. mobile apps, curl, or same-origin)
+    if (!origin) return callback(null, true);
+
+    const normalizedOrigin = origin.replace(/\/+$/, '');
+
+    // Allow explicitly listed origins, any .vercel.app domain, or any .onrender.com domain
+    const isAllowed = allowedOrigins.includes(normalizedOrigin) ||
+      /^https:\/\/.*\.vercel\.app$/.test(normalizedOrigin) ||
+      /^https:\/\/.*\.onrender\.com$/.test(normalizedOrigin);
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
 app.use(express.json());
 app.use(cookieParser());
